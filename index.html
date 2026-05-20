@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aliria — Rotas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--orange:#FF6B00;--orange-dark:#E05A00;--orange-light:#FFF3EB;--orange-mid:#FFD4B3;--text:#2D2D2D;--muted:#888;--border:#E8E8E8;--bg:#F7F7F7;--green:#1A7A4A;--green-bg:#E8F7F0;--red:#C0392B;--red-bg:#FDECEA;--blue:#1A73E8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;max-width:600px;margin:0 auto;padding-bottom:2.5rem;}
+.screen.active{display:block;}
+.header{background:var(--orange);padding:1.25rem 1.5rem;}
+.header h1{font-size:20px;font-weight:800;color:white;}
+.header p{font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px;font-weight:500;}
+.steps{display:flex;background:var(--orange);padding:0 1.5rem;}
+.step{flex:1;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);border-bottom:3px solid transparent;font-family:'Nunito',sans-serif;}
+.step.active{color:white;border-bottom:3px solid white;}
+.step.done{color:rgba(255,255,255,0.8);}
+.content{padding:1.25rem;}
+.card{background:white;border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.section-label{font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.field label{font-size:12px;font-weight:700;color:var(--muted);}
+input,select{width:100%;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;border:1.5px solid var(--border);border-radius:10px;background:white;color:var(--text);font-weight:500;}
+input:focus,select:focus{outline:none;border-color:var(--orange);}
+.origin-card{background:white;border:2px solid var(--orange);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.origin-dot{width:24px;height:24px;border-radius:50%;background:var(--orange);color:white;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle;}
+.origem-info{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:10px;padding:10px 12px;margin-top:10px;display:none;}
+.origem-info strong{font-size:13px;font-weight:800;color:#E05A00;display:block;}
+.origem-info span{font-size:12px;color:var(--muted);margin-top:2px;display:block;}
+.addr-item{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:12px;padding:12px;margin-bottom:10px;}
+.addr-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.addr-label{font-size:13px;font-weight:800;color:var(--orange);display:flex;align-items:center;gap:7px;}
+.addr-dot{width:24px;height:24px;border-radius:50%;background:var(--orange);color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.addr-item input{background:white;}
+.tip-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 12px;margin-bottom:12px;}
+.tip-box p{font-size:12px;font-weight:600;color:#1E40AF;margin:0;line-height:1.6;}
+.tip-box strong{font-weight:800;}
+.btn-add{width:100%;padding:11px;background:white;border:2px dashed var(--orange-mid);border-radius:12px;color:var(--orange);font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:1rem;}
+.btn-add:hover{background:var(--orange-light);}
+.btn-primary{width:100%;padding:13px;background:var(--orange);border:none;border-radius:12px;color:white;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;transition:background 0.15s;}
+.btn-primary:hover{background:var(--orange-dark);}
+.btn-primary:disabled{background:#ccc;cursor:not-allowed;}
+.btn-secondary{width:100%;padding:11px;background:none;border:1.5px solid var(--border);border-radius:12px;color:var(--muted);font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;}
+.btn-green{width:100%;padding:13px;background:var(--green);border:none;border-radius:12px;color:white;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;}
+.btn-red{width:100%;padding:13px;background:var(--red);border:none;border-radius:12px;color:white;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;}
+.btn-whats{width:100%;padding:13px;background:#25D366;border:none;border-radius:12px;color:white;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.route-stop{display:flex;gap:12px;}
+.route-line-wrap{display:flex;flex-direction:column;align-items:center;}
+.route-dot-big{width:28px;height:28px;border-radius:50%;background:var(--orange);color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.route-dot-big.origin{background:#2D2D2D;}
+.route-line{width:2px;background:var(--orange-mid);flex:1;min-height:20px;margin:3px 0;}
+.route-info{flex:1;padding-bottom:16px;}
+.route-info h4{font-size:14px;font-weight:700;margin-bottom:2px;}
+.route-info p{font-size:12px;color:var(--muted);}
+.route-stop:last-child .route-info{padding-bottom:0;}
+.tag-km{display:inline-block;background:white;border:1px solid var(--orange-mid);border-radius:6px;font-size:11px;font-weight:700;color:var(--orange);padding:2px 7px;margin-top:3px;}
+.tag-pts{display:inline-block;background:white;border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:700;color:var(--muted);padding:2px 7px;margin-left:4px;}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.metric{background:var(--bg);border-radius:10px;padding:10px 12px;border:1px solid var(--border);}
+.metric-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
+.metric-value{font-size:18px;font-weight:800;color:var(--text);}
+.metric-value.accent{color:var(--orange);}
+.breakdown{border-top:1px solid var(--border);padding-top:10px;}
+.brow{display:flex;justify-content:space-between;font-size:13px;font-weight:600;padding:5px 0;border-bottom:1px solid var(--border);}
+.brow:last-child{border:none;font-size:15px;font-weight:800;}
+.brow span:first-child{color:var(--muted);font-weight:500;}
+.brow:last-child span:last-child{color:var(--orange);}
+.link-box{background:var(--orange-light);border:1.5px solid var(--orange-mid);border-radius:12px;padding:14px;margin-bottom:1rem;}
+.link-url{font-size:12px;font-weight:600;color:var(--orange);word-break:break-all;margin-bottom:10px;background:white;border-radius:8px;padding:8px 10px;border:1px solid var(--orange-mid);max-height:80px;overflow-y:auto;}
+.btn-copy{width:100%;padding:11px;background:var(--orange);border:none;border-radius:10px;color:white;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;}
+.btn-copy.copied{background:var(--green);}
+.moto-header{background:var(--orange);padding:1.5rem;text-align:center;}
+.moto-header h1{font-size:22px;font-weight:800;color:white;}
+.moto-header p{font-size:13px;color:rgba(255,255,255,0.8);margin-top:4px;font-weight:500;}
+.valor-destaque{background:var(--orange);border-radius:14px;padding:1.25rem;text-align:center;margin-bottom:1rem;}
+.valor-destaque .label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.valor-destaque .valor{font-size:36px;font-weight:800;color:white;}
+.badge-aceita{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green);font-size:16px;font-weight:800;padding:10px 20px;border-radius:20px;}
+.badge-recusou{display:inline-flex;align-items:center;gap:6px;background:var(--red-bg);color:var(--red);font-size:16px;font-weight:800;padding:10px 20px;border-radius:20px;}
+.maps-btn{width:100%;padding:12px;background:var(--blue);border:none;border-radius:12px;color:white;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.summary-bar{background:var(--orange);border-radius:12px;padding:14px 16px;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;}
+.summary-bar-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);}
+.summary-bar-value{font-size:20px;font-weight:800;color:white;}
+.hist-item{background:white;border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.hist-name{font-size:15px;font-weight:800;color:var(--text);}
+.hist-date{font-size:12px;font-weight:500;color:var(--muted);margin-top:2px;}
+.hist-price{font-size:17px;font-weight:800;color:var(--orange);}
+.hist-badge{font-size:11px;font-weight:700;background:var(--green-bg);color:var(--green);padding:3px 9px;border-radius:20px;display:inline-block;}
+.hist-meta{font-size:12px;font-weight:600;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-state p{font-size:14px;font-weight:600;}
+.spinner{width:20px;height:20px;border:3px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+.spinner-orange{width:28px;height:28px;border:3px solid var(--orange-mid);border-top-color:var(--orange);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.erro-box{background:var(--red-bg);border:1px solid #f5c6c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--red);line-height:1.6;white-space:pre-line;}
+.loading-rel{text-align:center;padding:2rem;color:var(--muted);font-size:14px;font-weight:600;}
+</style>
+</head>
+<body><!-- MOTO-BLOQUEIO-1774628468 -->
+
+<!-- TELA 1: CADASTRO -->
+<div class="screen active" id="screen-cadastro">
+  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Cadastro de entrega de medicamentos</p></div>
+  <div class="steps">
+    <div class="step active">1. Endere&#231;os</div>
+    <div class="step">2. Rota</div>
+    <div class="step">3. Link</div>
+  </div>
+  <div class="content">
+    <div class="origin-card">
+      <p class="section-label"><span class="origin-dot">A</span>Ponto de sa&#237;da</p>
+      <div class="field" style="margin-bottom:0">
+        <label>Selecione a unidade de sa&#237;da</label>
+        <select id="origem-select" onchange="selecionarOrigem()">
+          <option value="">&#8212; Escolha a unidade &#8212;</option>
+          <option value="Rua Joaquim Floriano, 820, Itaim Bibi, São Paulo, SP">Aliria SP &#8212; Itaim Bibi</option>
+          <option value="outro">Outro endere&#231;o (digitar manualmente)</option>
+        </select>
+      </div>
+      <div id="origem-info" class="origem-info">
+        <strong id="origem-nome"></strong>
+        <span id="origem-end"></span>
+      </div>
+      <div class="field" id="origem-manual-wrap" style="display:none;margin-top:10px;margin-bottom:0">
+        <label>Endere&#231;o completo</label>
+        <input type="text" id="origem-manual" placeholder="Rua, n&#250;mero, bairro, cidade, estado"/>
+      </div>
+    </div>
+    <div class="card">
+      <p class="section-label">Pontos de entrega</p>
+      <div class="tip-box">
+        <p>&#9888;&#65039; <strong>Aten&#231;&#227;o:</strong> sempre inclua cidade e estado no endere&#231;o.<br>
+        &#9989; Correto: <strong>Av. Paulista, 1000, Bela Vista, S&#227;o Paulo, SP</strong></p>
+      </div>
+      <div id="enderecos-list"></div>
+      <button class="btn-add" onclick="addEndereco()">+ Adicionar endere&#231;o de entrega</button>
+    </div>
+    <div class="card">
+      <p class="section-label">Data e hor&#225;rio</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field" style="margin-bottom:0"><label>Data</label><input type="date" id="data-rota"/></div>
+        <div class="field" style="margin-bottom:0"><label>Hor&#225;rio</label><input type="time" id="hora-rota"/></div>
+      </div>
+    </div>
+    <div id="erro-geo" class="erro-box" style="display:none"></div>
+    <button class="btn-primary" id="btn-calcular" onclick="gerarRota()">Calcular melhor rota &#8594;</button>
+    <button class="btn-secondary" onclick="showScreen('screen-relatorio')">Ver relat&#243;rio mensal</button>
+  </div>
+</div>
+
+<!-- TELA 2: ROTA -->
+<div class="screen" id="screen-rota">
+  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Rota organizada</p></div>
+  <div class="steps">
+    <div class="step done">1. Endere&#231;os</div>
+    <div class="step active">2. Rota</div>
+    <div class="step">3. Link</div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <p class="section-label">Sequ&#234;ncia otimizada</p>
+      <div id="rota-visual"></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--orange)">
+      <p class="section-label">Valor da rota</p>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Paradas</div><div class="metric-value" id="r-paradas">&#8212;</div></div>
+        <div class="metric"><div class="metric-label">Dist&#226;ncia</div><div class="metric-value" id="r-km">&#8212;</div></div>
+        <div class="metric"><div class="metric-label">Tempo estimado</div><div class="metric-value" id="r-tempo">&#8212;</div></div>
+        <div class="metric"><div class="metric-label">Total</div><div class="metric-value accent" id="r-total">&#8212;</div></div>
+      </div>
+      <div class="breakdown">
+        <div class="brow"><span>Base (dist&#226;ncia)</span><span id="r-base">&#8212;</span></div>
+        <div class="brow" id="r-extra-row" style="display:none"><span>Acr&#233;scimo (3&#170;+ entrega)</span><span id="r-extra">&#8212;</span></div>
+        <div class="brow"><span>Total a pagar</span><span id="r-total2">&#8212;</span></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="gerarLink()">Gerar link para motogirl &#8594;</button>
+    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">&#8592; Editar endere&#231;os</button>
+  </div>
+</div>
+
+<!-- TELA 3: LINK -->
+<div class="screen" id="screen-link">
+  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Link gerado com sucesso</p></div>
+  <div class="steps">
+    <div class="step done">1. Endere&#231;os</div>
+    <div class="step done">2. Rota</div>
+    <div class="step active">3. Link</div>
+  </div>
+  <div class="content">
+    <div class="card" style="text-align:center;padding:1.5rem">
+      <div style="font-size:40px;margin-bottom:10px">&#128279;</div>
+      <h3 style="font-size:17px;font-weight:800;margin-bottom:6px">Link pronto!</h3>
+      <p style="font-size:13px;font-weight:500;color:var(--muted)">Copie e envie pelo WhatsApp para a motogirl</p>
+    </div>
+    <div class="link-box">
+      <div class="link-url" id="link-display">&#8212;</div>
+      <button class="btn-copy" id="btn-copy" onclick="copiarLink()">Copiar link</button>
+    </div>
+    <button class="btn-whats" onclick="enviarWhats()">&#128172; Enviar pelo WhatsApp</button>
+    <div class="card" style="background:var(--orange-light);border-color:var(--orange-mid)">
+      <p class="section-label">Resumo da rota</p>
+      <div id="resumo-link"></div>
+    </div>
+    <button class="btn-secondary" onclick="novaRota()">Nova rota</button>
+  </div>
+</div>
+
+<!-- TELA 4: MOTOGIRL -->
+<div class="screen" id="screen-moto-loading">
+  <div class="header"><h1>Aliria — Rotas</h1><p>Carregando rota...</p></div>
+  <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px">
+    <span class="spinner" style="width:40px;height:40px;border-width:4px"></span>
+    <p style="color:var(--muted);font-size:14px">Aguarde, buscando sua rota...</p>
+  </div>
+</div>
+<div class="screen" id="screen-moto">
+  <div class="moto-header"><h1>Aliria</h1><p>Nova rota dispon&#237;vel para voc&#234;</p></div>
+  <div class="content" style="padding-top:1.25rem">
+    <div class="valor-destaque">
+      <div class="label">Valor da rota</div>
+      <div class="valor" id="moto-valor">&#8212;</div>
+    </div>
+    <div class="card"><p class="section-label">Sequ&#234;ncia de entregas</p><div id="moto-rota-visual"></div></div>
+    <div class="card"><p class="section-label">Data e hor&#225;rio</p><div style="font-size:15px;font-weight:700;color:var(--text)" id="moto-data">&#8212;</div></div>
+    <div id="moto-acoes">
+      <div class="field" style="margin-bottom:12px">
+        <label>Seu nome</label>
+        <input type="text" id="moto-nome" placeholder="Digite seu nome completo"/>
+      </div>
+      <button class="btn-green" onclick="motoAceitar()">&#10003; Aceito fazer esta rota</button>
+      <button class="btn-red" onclick="motoRecusar()">&#10007; N&#227;o consigo fazer esta rota</button>
+    </div>
+    <div id="moto-resposta" style="display:none;text-align:center;padding:2rem 0">
+      <div id="moto-badge"></div>
+      <p style="margin-top:14px;font-size:14px;font-weight:600;color:var(--muted)" id="moto-msg"></p>
+      <button class="maps-btn" id="btn-maps" onclick="abrirMaps()" style="display:none">&#128205; Abrir rota no Google Maps</button>
+    </div>
+  </div>
+</div>
+
+<!-- TELA 5: RELATORIO -->
+<div class="screen" id="screen-relatorio">
+  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Relat&#243;rio mensal de entregas</p></div>
+  <div class="content" style="padding-top:1.25rem">
+    <div class="card" style="padding:0.75rem 1.25rem">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);flex-shrink:0">M&#234;s:</div>
+        <select id="mes-select" onchange="carregarRelatorio()" style="flex:1"></select>
+        <button class="btn-primary" onclick="exportarPDF()" style="width:auto;padding:9px 16px;font-size:13px;margin-bottom:0;flex-shrink:0">Baixar PDF</button>
+      </div>
+    </div>
+    <div id="rel-summary" style="display:none">
+      <div class="summary-bar">
+        <div><div class="summary-bar-label">Total do m&#234;s</div><div class="summary-bar-value" id="rel-total">&#8212;</div></div>
+        <div style="text-align:center"><div class="summary-bar-label">Entregas</div><div class="summary-bar-value" id="rel-count">&#8212;</div></div>
+        <div style="text-align:right"><div class="summary-bar-label">Km total</div><div class="summary-bar-value" id="rel-km">&#8212;</div></div>
+      </div>
+    </div>
+    <div id="rel-list"></div>
+    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">&#8592; Voltar</button>
+  </div>
+</div>
+
+<script>
+var SB='https://fmivqhsfkvfunznrlxde.supabase.co';
+var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtaXZxaHNma3ZmdW56bnJseGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3Mzg4MDIsImV4cCI6MjA4OTMxNDgwMn0.ktJjaqdqXgcJbepqFXIkcsovQR_DoTVN30lZr7pG2o0';
+var OK='eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImUxOGFiNzFkNzAyYTRmMTA4YzhiNTQzMTY1ODM0M2RhIiwiaCI6Im11cm11cjY0In0=';
+var ORIGENS=[{nome:'Aliria SP \u2014 Itaim Bibi',end:'Rua Joaquim Floriano, 820, Itaim Bibi, S\u00e3o Paulo, SP'}];
+var H={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
+var ends=[],rota=null,link='',relDados=[];
+
+document.getElementById('data-rota').value=new Date().toISOString().split('T')[0];
+
+window.addEventListener('load',function(){
+  var h=window.location.hash;
+  if(h&&h.startsWith('#rota=')){
+    var val=h.replace('#rota=','');
+    if(val.length<100&&/^[0-9a-f-]+$/i.test(val)){
+      showScreen('screen-moto-loading');
+      fetch(SB+'/rest/v1/rotas_motoboy?id=eq.'+val+'&select=dados',{
+        headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+      }).then(function(r){return r.json();}).then(function(rows){
+        if(rows&&rows[0]&&rows[0].dados) mostrarMoto(rows[0].dados,val);
+        else try{mostrarMoto(JSON.parse(decodeURIComponent(escape(atob(val)))));}catch(e){}
+      }).catch(function(){try{mostrarMoto(JSON.parse(decodeURIComponent(escape(atob(val)))));}catch(e){}});
+    } else {
+      try{mostrarMoto(JSON.parse(decodeURIComponent(escape(atob(val)))));}catch(e){}
+    }
+  }
+  popMeses();
+});
+
+function selecionarOrigem(){
+  var v=document.getElementById('origem-select').value;
+  var info=document.getElementById('origem-info');
+  var mw=document.getElementById('origem-manual-wrap');
+  if(!v){info.style.display='none';mw.style.display='none';return;}
+  if(v==='outro'){info.style.display='none';mw.style.display='block';return;}
+  var o=ORIGENS.find(function(x){return x.end===v;});
+  if(o){
+    document.getElementById('origem-nome').textContent=o.nome;
+    document.getElementById('origem-end').textContent=o.end;
+    info.style.display='block';mw.style.display='none';
+  }
+}
+
+function getOrigem(){
+  var v=document.getElementById('origem-select').value;
+  return v==='outro'?document.getElementById('origem-manual').value.trim():v;
+}
+
+function fmt(n){return 'R$ '+Number(n).toFixed(2).replace('.',',');}
+
+function calcP(km,numEntregas){
+  var b=km<=5?30:km<=9?35:35+(km-10)*2;
+  var extra=numEntregas>2?(numEntregas-2)*5:0;
+  return{base:Math.round(b*100)/100,extra:extra,total:Math.round((b+extra)*100)/100};
+}
+
+function addEndereco(){ends.push({id:Date.now(),nome:'',addr:'',pts:0,refrig:false});renderEnds();}
+function rmEnd(id){ends=ends.filter(function(e){return e.id!==id;});renderEnds();}
+function updEnd(id,f,v){var e=ends.find(function(e){return e.id===id;});if(e)e[f]=v;}
+
+function renderEnds(){
+  document.getElementById('enderecos-list').innerHTML=ends.map(function(e,i){
+    return '<div class="addr-item">'+
+      '<div class="addr-header">'+
+        '<div class="addr-label"><div class="addr-dot">'+String.fromCharCode(66+i)+'</div>Entrega '+(i+1)+'</div>'+
+        '<button class="btn-rm" onclick="rmEnd('+e.id+')">&#215;</button>'+
+      '</div>'+
+      '<div class="field" style="margin-bottom:8px">'+
+        '<label style="font-size:12px">Nome do destinat\u00e1rio</label>'+
+        '<input type="text" placeholder="Ex: Maria Jos\u00e9 da Silva" value="'+(e.nome||'')+'" oninput="updEnd('+e.id+',\'nome\',this.value)"/>'+
+      '</div>'+
+      '<div class="field" style="margin-bottom:8px">'+
+        '<label style="font-size:12px">Endere\u00e7o completo (com cidade e estado)</label>'+
+        '<input type="text" placeholder="Ex: Av. Paulista, 1000, Bela Vista, S\u00e3o Paulo, SP" value="'+e.addr+'" onchange="updEnd('+e.id+',\'addr\',this.value)"/>'+
+      '</div>'+
+
+      '<div class="field" style="display:flex;align-items:center;gap:10px;background:#E3F2FD;border-radius:8px;padding:10px 12px;margin-top:4px">'+
+        '<input type="checkbox" id="refrig-'+e.id+'" '+(e.refrig?'checked':'')+'  onchange="updEnd('+e.id+',\'refrig\',this.checked)" style="width:18px;height:18px;margin:0;cursor:pointer"/>'+
+        '<label for="refrig-'+e.id+'" style="font-size:13px;font-weight:600;color:#e65100;margin:0;cursor:pointer">\u2744\ufe0f Medicamento refrigerado</label>'+
+      '</div></div>';
+  }).join('');
+}
+
+function geo(addr){
+  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addr)+'&boundary.country=BR&size=1')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.features&&d.features[0]){var c=d.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
+      return null;
+    });
+}
+
+function calcDist(coords){
+  return fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+    method:'POST',headers:{'Authorization':OK,'Content-Type':'application/json'},
+    body:JSON.stringify({coordinates:coords,instructions:false})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.routes||!d.routes[0])return null;
+    var km=d.routes[0].summary.distance/1000;
+    var min=Math.ceil(d.routes[0].summary.duration/60*0.7);
+    return{km:km,min:min};
+  });
+}
+
+function gerarRota(){
+  var origem=getOrigem();
+  if(!origem){alert('Selecione o ponto de sa\u00edda.');return;}
+  if(!ends.length){alert('Adicione pelo menos um endere\u00e7o.');return;}
+  if(ends.some(function(e){return !e.addr.trim();})){alert('Preencha todos os endere\u00e7os.');return;}
+  var btn=document.getElementById('btn-calcular');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Calculando rota...';
+  document.getElementById('erro-geo').style.display='none';
+
+  var origemGeo;
+  geo(origem).then(function(og){
+    if(!og)throw new Error('Ponto de sa\u00edda n\u00e3o encontrado.\nInclua rua, n\u00famero, bairro, cidade e estado.');
+    origemGeo=og;
+    var promises=ends.map(function(e,i){
+      return geo(e.addr).then(function(g){
+        if(!g)throw new Error('Endere\u00e7o '+(i+1)+' n\u00e3o encontrado:\n"'+e.addr+'"\nInclua cidade e estado.');
+        return Object.assign({},e,{g:g});
+      });
+    });
+    return Promise.all(promises);
+  }).then(function(ge){
+    return Promise.all(ge.map(function(e){
+      return calcDist([[origemGeo.lng,origemGeo.lat],[e.g.lng,e.g.lat]]).then(function(res){
+        var k=res&&res.km!=null?res.km:res;
+        return Object.assign({},e,{km:k!==null?Math.round(k*10)/10:0});
+      });
+    }));
+  }).then(function(cd){
+    function haverDist(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+    var restantes=cd.slice(),ord=[],curLat=origemGeo.lat,curLng=origemGeo.lng;
+    while(restantes.length>0){var minD=Infinity,minI=0;for(var j=0;j<restantes.length;j++){var d=haverDist(curLat,curLng,restantes[j].g.lat,restantes[j].g.lng);if(d<minD){minD=d;minI=j;}}ord.push(restantes[minI]);curLat=restantes[minI].g.lat;curLng=restantes[minI].g.lng;restantes.splice(minI,1);}
+    var tkm;
+    if(ord.length===1){
+      tkm=ord[0].km;
+      var ac1=[[origemGeo.lng,origemGeo.lat],[ord[0].g.lng,ord[0].g.lat]];
+      return calcDist(ac1).then(function(res1){
+        var dm1=res1&&res1.min!=null?res1.min:null;
+        processar(ord,tkm,dm1);});
+    } else {
+      var ac=[[origemGeo.lng,origemGeo.lat]].concat(ord.map(function(e){return[e.g.lng,e.g.lat];}));
+      return calcDist(ac).then(function(res){
+        var dk=res&&res.km!=null?res.km:res;
+        var dm=res&&res.min!=null?res.min:null;
+        tkm=dk!==null?Math.round(dk*10)/10:ord.reduce(function(s,e){return s+e.km;},0);
+        processar(ord,tkm,dm);
+      });
+    }
+  }).catch(function(err){
+    var el=document.getElementById('erro-geo');
+    el.style.display='block';el.textContent='\u26a0 '+(err.message||'Erro ao calcular rota.');
+    btn.disabled=false;btn.textContent='Calcular melhor rota \u2192';
+  });
+
+  function processar(ord,tkm,tmin){
+    var c=calcP(tkm,ord.length);
+    rota={origem:origem,data:document.getElementById('data-rota').value,hora:document.getElementById('hora-rota').value,
+      paradas:ord.map(function(e){return{nome:e.nome||'',addr:e.addr,km:e.km,refrig:e.refrig||false};}),totalKm:tkm,calc:c};
+    renderRota('rota-visual',rota);
+    document.getElementById('r-paradas').textContent=ord.length;
+    document.getElementById('r-km').textContent=tkm.toFixed(1)+' km';
+    if(tmin){
+      var h=Math.floor(tmin/60),m=tmin%60;
+      document.getElementById('r-tempo').textContent=(h>0?h+'h ':'')+(m>0?m+'min':'');
+    } else {
+      document.getElementById('r-tempo').textContent='N/A';
+    }
+    document.getElementById('r-total').textContent=fmt(c.total);
+    document.getElementById('r-base').textContent=fmt(c.base);
+    if(c.extra>0){document.getElementById('r-extra-row').style.display='';document.getElementById('r-extra').textContent=fmt(c.extra);}
+    document.getElementById('r-total2').textContent=fmt(c.total);
+    showScreen('screen-rota');
+    btn.disabled=false;btn.textContent='Calcular melhor rota \u2192';
+  }
+}
+
+function renderRota(id,r){
+  var stops=[{l:'A',addr:r.origem,orig:true}].concat(r.paradas.map(function(p,i){
+    return{l:String.fromCharCode(66+i),nome:p.nome||'',addr:p.addr,km:p.km,refrig:p.refrig||false};
+  }));
+  document.getElementById(id).innerHTML=stops.map(function(s,i){
+    var kmTag=s.orig?'Ponto de sa\u00edda':'<span class="tag-km">'+(parseFloat(s.km)||0).toFixed(1)+' km</span>'+(s.pts>0?'<span class="tag-pts">'+s.pts+' ponto(s) C+</span>':'');
+    return '<div class="route-stop">'+
+      '<div class="route-line-wrap">'+
+        '<div class="route-dot-big '+(s.orig?'origin':'')+'">'+ s.l+'</div>'+
+        (i<stops.length-1?'<div class="route-line"></div>':'')+
+      '</div>'+
+      '<div class="route-info">'+
+      (s.nome?'<p style="font-size:11px;font-weight:700;color:var(--orange);margin:0 0 2px">\uD83D\uDC64 '+s.nome+(s.refrig?' \u2744\ufe0f':'')+'</p>':"")+
+      '<h4>'+s.addr+'</h4><p>'+kmTag+'</p></div>'+
+    '</div>';
+  }).join('');
+}
+
+async function gerarLink(){
+  if(!rota)return;
+  var btn=document.getElementById('btn-gerar');
+  if(btn){btn.disabled=true;btn.textContent='Gerando link...';}
+  try{
+    var res=await fetch(SB+'/rest/v1/rotas_motoboy',{
+      method:'POST',
+      headers:Object.assign({},H,{'Prefer':'return=representation'}),
+      body:JSON.stringify({dados:rota,origem:rota.origem,data:rota.data})
+    });
+    var saved=await res.json();
+    var id=Array.isArray(saved)?saved[0]&&saved[0].id:saved&&saved.id;
+    if(id){
+      link=window.location.href.split('#')[0]+'#rota='+id;
+    } else {
+      link=window.location.href.split('#')[0]+'#rota='+btoa(unescape(encodeURIComponent(JSON.stringify(rota))));
+    }
+  } catch(e){
+    link=window.location.href.split('#')[0]+'#rota='+btoa(unescape(encodeURIComponent(JSON.stringify(rota))));
+  }
+  if(btn){btn.disabled=false;btn.textContent='Gerar link para motogirl →';}
+  document.getElementById('link-display').textContent=link;
+  var df=rota.data?new Date(rota.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+  document.getElementById('resumo-link').innerHTML=
+    '<div style="display:flex;flex-direction:column;gap:6px">'+
+    '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Paradas</span><span>'+rota.paradas.length+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Dist\u00e2ncia</span><span>'+rota.totalKm.toFixed(1)+' km</span></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Data</span><span>'+df+' '+(rota.hora||'')+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding-top:8px;border-top:1px solid var(--border)"><span>Total a pagar</span><span style="color:var(--orange)">'+fmt(rota.calc.total)+'</span></div></div>';
+  showScreen('screen-link');
+}
+
+function copiarLink(){
+  navigator.clipboard.writeText(link).then(function(){
+    var b=document.getElementById('btn-copy');
+    b.textContent='\u2713 Link copiado!';b.classList.add('copied');
+    setTimeout(function(){b.textContent='Copiar link';b.classList.remove('copied');},2500);
+  });
+}
+
+function enviarWhats(){
+  if(!rota)return;
+  var df=rota.data?new Date(rota.data+'T12:00:00').toLocaleDateString('pt-BR'):'';
+  var msg='*Aliria \u2014 Nova rota!*\n\n*Data:* '+df+(rota.hora?' \u00e0s '+rota.hora:'')+'\n*Paradas:* '+rota.paradas.length+'\n*Dist\u00e2ncia:* '+rota.totalKm.toFixed(1)+' km\n*Valor:* '+fmt(rota.calc.total)+'\n\n'+link;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function mostrarMoto(r,linkId){
+  rota=r;
+  window._motoLinkId=linkId||null;
+  var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+  document.getElementById('moto-valor').textContent=fmt(r.calc.total);
+  document.getElementById('moto-data').textContent=df+(r.hora?' \u00e0s '+r.hora:'');
+  renderRota('moto-rota-visual',r);
+  // Se já foi aceita, bloquear os botões
+  if(r.aceita){
+    showScreen('screen-moto');
+    document.getElementById('moto-acoes').style.display='none';
+    document.getElementById('moto-resposta').style.display='block';
+    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">\u2713 Rota já aceita!</span>';
+    document.getElementById('moto-msg').textContent='Esta rota já foi confirmada anteriormente.';
+    document.getElementById('btn-maps').style.display='flex';
+  } else {
+    showScreen('screen-moto');
+  }
+}
+
+function motoAceitar(){
+  var nome=document.getElementById('moto-nome').value.trim();
+  if(!nome){alert('Informe seu nome.');return;}
+  var btn=document.querySelector('#moto-acoes .btn-green');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Salvando...';
+  fetch(SB+'/rest/v1/rotas',{
+    method:'POST',
+    headers:Object.assign({},H,{'Prefer':'return=minimal'}),
+    body:JSON.stringify({motoboy:nome,origem:rota.origem,data:rota.data,hora:rota.hora,
+      paradas:rota.paradas,total_km:rota.totalKm,total_pts:rota.totalPts,valor:rota.calc.total,calc:rota.calc})
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error(t);});
+    document.getElementById('moto-acoes').style.display='none';
+    document.getElementById('moto-resposta').style.display='block';
+    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">\u2713 Rota aceita!</span>';
+    document.getElementById('moto-msg').textContent=nome+' confirmou esta entrega!';
+    document.getElementById('btn-maps').style.display='flex';
+    // Marcar link como aceito no Supabase para bloquear novo aceite
+    if(window._motoLinkId){
+      fetch(SB+'/rest/v1/rotas_motoboy?id=eq.'+window._motoLinkId,{
+        method:'PATCH',
+        headers:Object.assign({},H,{'Prefer':'return=minimal'}),
+        body:JSON.stringify({dados:Object.assign({},rota,{aceita:true,motoboy_nome:nome})})
+      }).catch(function(){});
+    }
+  }).catch(function(err){
+    btn.disabled=false;btn.textContent='\u2713 Aceito fazer esta rota';
+    alert('Erro ao salvar.\n'+err.message);
+  });
+}
+
+function motoRecusar(){
+  document.getElementById('moto-acoes').style.display='none';
+  document.getElementById('moto-resposta').style.display='block';
+  document.getElementById('moto-badge').innerHTML='<span class="badge-recusou">\u2715 Rota recusada</span>';
+  document.getElementById('moto-msg').textContent='Voc\u00ea recusou esta rota.';
+}
+
+function abrirMaps(){
+  if(!rota)return;
+  var ps=[rota.origem].concat(rota.paradas.map(function(p){return p.addr;})).filter(Boolean);
+  var o=encodeURIComponent(ps[0]),d=encodeURIComponent(ps[ps.length-1]);
+  var w=ps.slice(1,-1).map(function(p){return encodeURIComponent(p);}).join('|');
+  window.open('https://www.google.com/maps/dir/?api=1&origin='+o+'&destination='+d+(w?'&waypoints='+w:'')+'&travelmode=driving','_blank');
+}
+
+function popMeses(){
+  var now=new Date(),sel=document.getElementById('mes-select'),ms=[];
+  for(var i=0;i<12;i++){
+    var d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    var v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    var n=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    ms.push({v:v,n:n.charAt(0).toUpperCase()+n.slice(1)});
+  }
+  sel.innerHTML=ms.map(function(m){return '<option value="'+m.v+'">'+m.n+'</option>';}).join('');
+}
+
+function carregarRelatorio(){
+  var mes=document.getElementById('mes-select').value;
+  var el=document.getElementById('rel-list'),su=document.getElementById('rel-summary');
+  el.innerHTML='<div class="loading-rel"><div class="spinner-orange"></div>Carregando...</div>';
+  su.style.display='none';
+  fetch(SB+'/rest/v1/rotas?data=gte.'+mes+'-01&data=lte.'+mes+'-31&order=data.asc',{headers:H})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      relDados=data;
+      if(!data.length){el.innerHTML='<div class="empty-state"><p>Nenhuma entrega neste m\u00eas.</p></div>';return;}
+      var tv=data.reduce(function(s,r){return s+Number(r.valor||0);},0);
+      var tk=data.reduce(function(s,r){return s+Number(r.total_km||0);},0);
+      su.style.display='block';
+      document.getElementById('rel-total').textContent=fmt(tv);
+      document.getElementById('rel-count').textContent=data.length;
+      document.getElementById('rel-km').textContent=tk.toFixed(1)+' km';
+      el.innerHTML=data.map(function(r){
+        var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+        var ps=Array.isArray(r.paradas)?r.paradas:[];
+        return '<div class="hist-item" id="rel-item-'+r.id+'" data-valor="'+Number(r.valor||0)+'" data-km="'+Number(r.total_km||0)+'">'+
+          '<div class="hist-top">'+
+            '<div><div class="hist-name">'+(r.motoboy||'\u2014')+'</div><div class="hist-date">'+df+' '+(r.hora||'')+'</div></div>'+
+            '<div style="text-align:right;display:flex;align-items:center;gap:10px">'+
+              '<div><div class="hist-price">'+fmt(r.valor||0)+'</div><span class="hist-badge">aceita</span></div>'+
+              '<button onclick="excluirDoRelatorio(\''+r.id+'\')" title="Excluir do relatório" style="background:none;border:1px solid #e53935;color:#e53935;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:16px;line-height:1">\uD83D\uDDD1</button>'+
+            '</div>'+
+          '</div>'+
+          '<div class="hist-meta"><span>'+ps.length+' parada(s)</span><span>'+Number(r.total_km||0).toFixed(1)+' km</span></div>'+
+        '</div>';
+      }).join('');
+    }).catch(function(){el.innerHTML='<div class="erro-box">\u26a0 Erro ao carregar dados.</div>';});
+}
+
+async function excluirDoRelatorio(id){
+  if(!confirm('Excluir esta rota do relatório? Esta ação não pode ser desfeita.'))return;
+  try{
+    var r=await fetch(SB+'/rest/v1/rotas?id=eq.'+id,{
+      method:'DELETE',
+      headers:{'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'}
+    });
+    if(!r.ok)throw new Error('Status '+r.status);
+  }catch(e){alert('Erro ao excluir: '+e.message);return;}
+  var item=document.getElementById('rel-item-'+id);
+  if(item){
+    item.style.opacity='0';item.style.transform='translateX(-20px)';item.style.transition='all 0.3s';
+    setTimeout(function(){item.remove();},300);
+  }
+}
+
+function exportarPDF(){
+  if(!relDados.length){alert('Nenhuma entrega para exportar.');return;}
+  var mes=document.getElementById('mes-select').value;
+  var ym=mes.split('-'),y=parseInt(ym[0]),mo=parseInt(ym[1]);
+  var nm=new Date(y,mo-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  var nmf=nm.charAt(0).toUpperCase()+nm.slice(1);
+  var tv=relDados.reduce(function(s,r){return s+Number(r.valor||0);},0);
+  var tk=relDados.reduce(function(s,r){return s+Number(r.total_km||0);},0);
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:'mm',format:'a4'});var W=210,M=18,yy=0;
+  doc.setFillColor(255,107,0);doc.rect(0,0,W,42,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(255,255,255);
+  doc.text('Aliria \u2014 Relat\u00f3rio Mensal',M,18);
+  doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text(nmf,M,27);
+  doc.setFontSize(9);doc.text('Gerado em: '+new Date().toLocaleString('pt-BR'),M,34);yy=52;
+  doc.setFillColor(255,243,235);doc.roundedRect(M,yy,W-M*2,28,3,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,107,0);doc.text('RESUMO DO M\u00caS',M+6,yy+8);
+  doc.setFontSize(11);doc.setTextColor(45,45,45);
+  doc.text('Total: '+relDados.length+' entregas',M+6,yy+16);
+  doc.text('Km: '+tk.toFixed(1),M+80,yy+16);
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(255,107,0);
+  doc.text('TOTAL A PAGAR: '+fmt(tv),M+6,yy+24);yy+=36;
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,107,0);
+  doc.text('DETALHAMENTO DAS ENTREGAS',M,yy+6);yy+=12;
+  relDados.forEach(function(r,i){
+    if(yy>265){doc.addPage();yy=20;}
+    var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+    var ps=Array.isArray(r.paradas)?r.paradas:[];
+    var bg=i%2?245:250;
+    doc.setFillColor(bg,bg,bg);doc.rect(M,yy,W-M*2,22,'F');
+    doc.setDrawColor(232,232,232);doc.rect(M,yy,W-M*2,22);
+    doc.setFillColor(255,107,0);doc.circle(M+8,yy+11,5,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
+    doc.text(String(i+1),M+(String(i+1).length===1?6.2:4.5),yy+13.5);
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(45,45,45);
+    doc.text(r.motoboy||'\u2014',M+17,yy+8);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(136,136,136);
+    doc.text(df+' '+(r.hora||'')+'  \u2022  '+ps.length+' parada(s)  \u2022  '+Number(r.total_km||0).toFixed(1)+' km',M+17,yy+14);
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(255,107,0);
+    doc.text(fmt(r.valor||0),W-M-4,yy+13,{align:'right'});yy+=24;
+  });
+  yy+=4;doc.setFillColor(255,107,0);doc.roundedRect(M,yy,W-M*2,16,3,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(255,255,255);
+  doc.text('TOTAL DO M\u00caS:',M+6,yy+10);doc.text(fmt(tv),W-M-6,yy+10,{align:'right'});
+  doc.setFontSize(8);doc.setTextColor(200,200,200);
+  doc.text('Aliria \u2014 Sistema de Rotas',W/2,290,{align:'center'});
+  doc.save('Aliria_Relatorio_'+mes+'.pdf');
+}
+
+function novaRota(){
+  ends=[];rota=null;link='';
+  document.getElementById('origem-select').value='';
+  document.getElementById('origem-info').style.display='none';
+  document.getElementById('origem-manual-wrap').style.display='none';
+  document.getElementById('enderecos-list').innerHTML='';
+  history.pushState('',document.title,window.location.pathname);
+  showScreen('screen-cadastro');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='screen-relatorio')carregarRelatorio();
+}
+</script>
+</body>
+</html>
