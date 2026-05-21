@@ -402,18 +402,8 @@ function gerarRota(){
     }));
   }).then(function(cd){
     function haverDist(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-    var _coords=[[origemGeo.lng,origemGeo.lat]].concat(cd.map(function(e){return[e.g.lng,e.g.lat];}));
-    return fetch('https://api.openrouteservice.org/v2/matrix/driving-car',{
-      method:'POST',headers:{'Authorization':OK,'Content-Type':'application/json'},
-      body:JSON.stringify({locations:_coords,metrics:['duration']})
-    }).then(function(r){return r.json();}).catch(function(){return null;}).then(function(mx){
-      var _dur=mx&&mx.durations?mx.durations:null;
-      var _d=function(iA,iB){
-        if(_dur&&_dur[iA]&&_dur[iA][iB]!=null)return _dur[iA][iB];
-        return haverDist(_coords[iA][1],_coords[iA][0],_coords[iB][1],_coords[iB][0]);
-      };
-      var restantes=cd.map(function(e,i){return{e:e,i:i+1};}),ord=[],cur=0;
-      while(restantes.length>0){var minD=Infinity,minI=0;for(var j=0;j<restantes.length;j++){var d=_d(cur,restantes[j].i);if(d<minD){minD=d;minI=j;}}ord.push(restantes[minI].e);cur=restantes[minI].i;restantes.splice(minI,1);}
+    var restantes=cd.slice(),ord=[],curLat=origemGeo.lat,curLng=origemGeo.lng;
+    while(restantes.length>0){var minD=Infinity,minI=0;for(var j=0;j<restantes.length;j++){var d=haverDist(curLat,curLng,restantes[j].g.lat,restantes[j].g.lng);if(d<minD){minD=d;minI=j;}}ord.push(restantes[minI]);curLat=restantes[minI].g.lat;curLng=restantes[minI].g.lng;restantes.splice(minI,1);}
     var tkm;
     if(ord.length===1){
       tkm=ord[0].km;
