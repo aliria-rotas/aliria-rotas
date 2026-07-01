@@ -351,52 +351,39 @@ function renderEnds(){
 }
 
 function geo(addr){
-  // Remove CEP, numero de apto, torre e "Casa" antes de geocodificar
-  // O ORS nao lida bem com esses detalhes e retorna locais errados
-  var addrLimpo = addr
-    .replace(/,?\s*(CEP:?\s*)?\d{5}-\d{3}/gi, '')  // remove CEP 00000-000
-    .replace(/,?\s*\d{8}/g, '')                      // remove CEP 00000000
-    .replace(/,?\s*Apto?\s*[\w\/]+/gi, '')           // remove Apto 123
-    .replace(/,?\s*Torre\s*\w+/gi, '')               // remove Torre 2
-    .replace(/,?\s*Casa\s*\w+/gi, '')                // remove Casa 708
-    .replace(/\s*,\s*,/g, ',')                       // remove virgulas duplas
-    .trim();
-  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addrLimpo)+'&boundary.country=BR&size=1')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.features&&d.features[0]){var c=d.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
-      return null;
-    });
+  // Usa Nominatim (OpenStreetMap) - gratuito e conhece bem enderecos brasileiros
+  // Adiciona delay de 1s entre chamadas para respeitar limite da API
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q='+encodeURIComponent(addr), {
+        headers: {'Accept-Language': 'pt-BR', 'User-Agent': 'AliRiaRotas/1.0'}
+      })
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d&&d[0]){resolve({lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)});}
+        else{resolve(null);}
+      })
+      .catch(function(){resolve(null);});
+    }, 1100); // 1.1s de delay para respeitar limite de 1 req/s do Nominatim
+  });
 }
 
 // Calcula distância entre dois pontos via ORS (ponto a ponto)
-function calcDist2(coordA, coordB, tentativa){
-  tentativa = tentativa || 1;
-  return fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
-    method:'POST',
-    headers:{'Authorization':OK,'Content-Type':'application/json'},
-    body:JSON.stringify({coordinates:[coordA, coordB],instructions:false})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(!d.routes||!d.routes[0]){
-      if(tentativa < 3){
-        return new Promise(function(resolve){
-          setTimeout(function(){ resolve(calcDist2(coordA, coordB, tentativa+1)); }, 1200 * tentativa);
-        });
-      }
-      return null;
-    }
-    return{
-      km: Math.round(d.routes[0].summary.distance/1000*10)/10,
-      min: Math.ceil(d.routes[0].summary.duration/60*0.7)
-    };
-  }).catch(function(){
-    if(tentativa < 3){
-      return new Promise(function(resolve){
-        setTimeout(function(){ resolve(calcDist2(coordA, coordB, tentativa+1)); }, 1200 * tentativa);
-      });
-    }
-    return null;
-  });
+function calcDist2(coordA, coordB){
+  // Usa OSRM (OpenStreetMap) - gratuito, sem CORS, otimo para Brasil
+  var url = 'https://router.project-osrm.org/route/v1/driving/'
+    + coordA[0] + ',' + coordA[1] + ';' + coordB[0] + ',' + coordB[1]
+    + '?overview=false';
+  return fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.routes||!d.routes[0])return null;
+      return{
+        km: Math.round(d.routes[0].distance/1000*10)/10,
+        min: Math.ceil(d.routes[0].duration/60*0.7)
+      };
+    })
+    .catch(function(){return null;});
 }
 
 // Calcula rota completa sequencial A→B→C→D
