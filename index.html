@@ -360,18 +360,33 @@ function geo(addr){
 }
 
 // Calcula distância entre dois pontos via ORS (ponto a ponto)
-function calcDist2(coordA, coordB){
+function calcDist2(coordA, coordB, tentativa){
+  tentativa = tentativa || 1;
   return fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
     method:'POST',
     headers:{'Authorization':OK,'Content-Type':'application/json'},
     body:JSON.stringify({coordinates:[coordA, coordB],instructions:false})
   }).then(function(r){return r.json();}).then(function(d){
-    if(!d.routes||!d.routes[0])return null;
+    if(!d.routes||!d.routes[0]){
+      if(tentativa < 3){
+        return new Promise(function(resolve){
+          setTimeout(function(){ resolve(calcDist2(coordA, coordB, tentativa+1)); }, 1200 * tentativa);
+        });
+      }
+      return null;
+    }
     return{
       km: Math.round(d.routes[0].summary.distance/1000*10)/10,
       min: Math.ceil(d.routes[0].summary.duration/60*0.7)
     };
-  }).catch(function(){return null;});
+  }).catch(function(){
+    if(tentativa < 3){
+      return new Promise(function(resolve){
+        setTimeout(function(){ resolve(calcDist2(coordA, coordB, tentativa+1)); }, 1200 * tentativa);
+      });
+    }
+    return null;
+  });
 }
 
 // Calcula rota completa sequencial A→B→C→D
@@ -409,41 +424,43 @@ function gerarRota(){
       });
     }));
   }).then(function(geocoded){
-    // Ordenar por vizinho mais próximo (haversine para ordenação)
-    function haverDist(lat1,lng1,lat2,lng2){
-      var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
-      var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
-      return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-    }
-    var restantes=geocoded.slice(),ord=[],curLat=origemGeo.lat,curLng=origemGeo.lng;
-    while(restantes.length>0){
-      var minD=Infinity,minI=0;
-      for(var j=0;j<restantes.length;j++){
-        var d=haverDist(curLat,curLng,restantes[j].g.lat,restantes[j].g.lng);
-        if(d<minD){minD=d;minI=j;}
+    // Ordenar por vizinho mais próximo usando distâncias REAIS da ORS
+    // Primeiro calcula todas as distâncias da origem para cada ponto
+    return (async function ordenar(){
+      // Monta matriz de distâncias reais: origem → cada ponto e ponto → ponto
+      // Para N pontos, faz N chamadas da posição atual para cada candidato
+      var restantes=geocoded.slice();
+      var ord=[];
+      var curCoord=[origemGeo.lng,origemGeo.lat];
+
+      while(restantes.length>0){
+        // Calcula distância real da posição atual para cada candidato restante
+        var distPromises=restantes.map(function(e){
+          return calcDist2(curCoord,[e.g.lng,e.g.lat]).then(function(res){
+            return res&&res.km!=null?res.km:99999;
+          });
+        });
+        var dists=await Promise.all(distPromises);
+        // Escolhe o mais próximo
+        var minD=Infinity,minI=0;
+        for(var j=0;j<dists.length;j++){
+          if(dists[j]<minD){minD=dists[j];minI=j;}
+        }
+        ord.push(restantes[minI]);
+        curCoord=[restantes[minI].g.lng,restantes[minI].g.lat];
+        restantes.splice(minI,1);
       }
-      ord.push(restantes[minI]);
-      curLat=restantes[minI].g.lat;curLng=restantes[minI].g.lng;
-      restantes.splice(minI,1);
-    }
 
-    // Calcular distâncias SEQUENCIAIS em série (uma por vez) para garantir ordem certa
-    // pares: [origem→parada0, parada0→parada1, parada1→parada2, ...]
-    var pares=[[origemGeo, ord[0].g]];
-    for(var i=0;i<ord.length-1;i++){
-      pares.push([ord[i].g, ord[i+1].g]);
-    }
-
-    // Executa em série com async/await inline
-    return (async function(){
+      // Agora calcular distâncias sequenciais entre os pontos ordenados
+      // pares: origem→parada0, parada0→parada1, etc.
       var kmsSegmentos=[];
-      for(var pi=0;pi<pares.length;pi++){
-        var par=pares[pi];
-        var res=await calcDist2([par[0].lng,par[0].lat],[par[1].lng,par[1].lat]);
+      var segCoords=[[origemGeo.lng,origemGeo.lat]].concat(ord.map(function(e){return[e.g.lng,e.g.lat];}));
+      for(var si=0;si<segCoords.length-1;si++){
+        var res=await calcDist2(segCoords[si],segCoords[si+1]);
         kmsSegmentos.push(res);
       }
 
-      // Atribuir km sequencial a cada parada (índice i = segmento do ponto anterior até esta parada)
+      // Atribuir km sequencial a cada parada
       var ordComKm=ord.map(function(e,i){
         var seg=kmsSegmentos[i];
         var kmVal=seg&&seg.km!=null?seg.km:0;
@@ -506,7 +523,11 @@ function renderRota(id,r){
     } else {
       var kmVal=parseFloat(s.km)||0;
       var label=i===1?'da origem':'da parada anterior';
-      kmTag='<span class="tag-km">'+kmVal.toFixed(1)+' km '+label+'</span>';
+      if(kmVal===0){
+        kmTag='<span class="tag-km" style="color:#C0392B;border-color:#C0392B">⚠ distância não calculada</span>';
+      } else {
+        kmTag='<span class="tag-km">'+kmVal.toFixed(1)+' km '+label+'</span>';
+      }
     }
     return '<div class="route-stop">'+
       '<div class="route-line-wrap">'+
@@ -756,3 +777,4 @@ function showScreen(id){
 </script>
 </body>
 </html>
+
