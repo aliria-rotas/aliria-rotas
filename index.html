@@ -351,19 +351,21 @@ function renderEnds(){
 }
 
 function geo(addr){
-  // Tenta primeiro com o endereço completo, depois sem CEP se falhar
-  var addrSemCep = addr.replace(/,?\s*\d{5}-\d{3}/g,'').replace(/,?\s*\d{8}/g,'').trim();
-  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addr)+'&boundary.country=BR&size=1')
+  // Remove CEP, numero de apto, torre e "Casa" antes de geocodificar
+  // O ORS nao lida bem com esses detalhes e retorna locais errados
+  var addrLimpo = addr
+    .replace(/,?\s*(CEP:?\s*)?\d{5}-\d{3}/gi, '')  // remove CEP 00000-000
+    .replace(/,?\s*\d{8}/g, '')                      // remove CEP 00000000
+    .replace(/,?\s*Apto?\s*[\w\/]+/gi, '')           // remove Apto 123
+    .replace(/,?\s*Torre\s*\w+/gi, '')               // remove Torre 2
+    .replace(/,?\s*Casa\s*\w+/gi, '')                // remove Casa 708
+    .replace(/\s*,\s*,/g, ',')                       // remove virgulas duplas
+    .trim();
+  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addrLimpo)+'&boundary.country=BR&size=1')
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.features&&d.features[0]){var c=d.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
-      // Se falhou com CEP, tenta sem
-      return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addrSemCep)+'&boundary.country=BR&size=1')
-        .then(function(r2){return r2.json();})
-        .then(function(d2){
-          if(d2.features&&d2.features[0]){var c=d2.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
-          return null;
-        });
+      return null;
     });
 }
 
