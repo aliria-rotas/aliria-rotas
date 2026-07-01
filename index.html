@@ -59,7 +59,6 @@ input:focus,select:focus{outline:none;border-color:var(--orange);}
 .route-info p{font-size:12px;color:var(--muted);}
 .route-stop:last-child .route-info{padding-bottom:0;}
 .tag-km{display:inline-block;background:white;border:1px solid var(--orange-mid);border-radius:6px;font-size:11px;font-weight:700;color:var(--orange);padding:2px 7px;margin-top:3px;}
-.tag-pts{display:inline-block;background:white;border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:700;color:var(--muted);padding:2px 7px;margin-left:4px;}
 .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
 .metric{background:var(--bg);border-radius:10px;padding:10px 12px;border:1px solid var(--border);}
 .metric-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
@@ -102,25 +101,25 @@ input:focus,select:focus{outline:none;border-color:var(--orange);}
 .loading-rel{text-align:center;padding:2rem;color:var(--muted);font-size:14px;font-weight:600;}
 </style>
 </head>
-<body><!-- MOTO-BLOQUEIO-1774628468 -->
+<body>
 
 <!-- TELA 1: CADASTRO -->
 <div class="screen active" id="screen-cadastro">
-  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Cadastro de entrega de medicamentos</p></div>
+  <div class="header"><h1>Aliria — Rotas</h1><p>Cadastro de entrega de medicamentos</p></div>
   <div class="steps">
-    <div class="step active">1. Endere&#231;os</div>
+    <div class="step active">1. Endereços</div>
     <div class="step">2. Rota</div>
     <div class="step">3. Link</div>
   </div>
   <div class="content">
     <div class="origin-card">
-      <p class="section-label"><span class="origin-dot">A</span>Ponto de sa&#237;da</p>
+      <p class="section-label"><span class="origin-dot">A</span>Ponto de saída</p>
       <div class="field" style="margin-bottom:0">
-        <label>Selecione a unidade de sa&#237;da</label>
+        <label>Selecione a unidade de saída</label>
         <select id="origem-select" onchange="selecionarOrigem()">
-          <option value="">&#8212; Escolha a unidade &#8212;</option>
-          <option value="Rua Joaquim Floriano, 820, Itaim Bibi, São Paulo, SP">Aliria SP &#8212; Itaim Bibi</option>
-          <option value="outro">Outro endere&#231;o (digitar manualmente)</option>
+          <option value="">— Escolha a unidade —</option>
+          <option value="Rua Joaquim Floriano, 820, Itaim Bibi, São Paulo, SP">Aliria SP — Itaim Bibi</option>
+          <option value="outro">Outro endereço (digitar manualmente)</option>
         </select>
       </div>
       <div id="origem-info" class="origem-info">
@@ -128,83 +127,83 @@ input:focus,select:focus{outline:none;border-color:var(--orange);}
         <span id="origem-end"></span>
       </div>
       <div class="field" id="origem-manual-wrap" style="display:none;margin-top:10px;margin-bottom:0">
-        <label>Endere&#231;o completo</label>
-        <input type="text" id="origem-manual" placeholder="Rua, n&#250;mero, bairro, cidade, estado"/>
+        <label>Endereço completo</label>
+        <input type="text" id="origem-manual" placeholder="Rua, número, bairro, cidade, estado"/>
       </div>
     </div>
     <div class="card">
       <p class="section-label">Pontos de entrega</p>
       <div class="tip-box">
-        <p>&#9888;&#65039; <strong>Aten&#231;&#227;o:</strong> sempre inclua cidade e estado no endere&#231;o.<br>
-        &#9989; Correto: <strong>Av. Paulista, 1000, Bela Vista, S&#227;o Paulo, SP</strong></p>
+        <p>⚠️ <strong>Atenção:</strong> sempre inclua cidade e estado no endereço.<br>
+        ✅ Correto: <strong>Av. Paulista, 1000, Bela Vista, São Paulo, SP</strong></p>
       </div>
       <div id="enderecos-list"></div>
-      <button class="btn-add" onclick="addEndereco()">+ Adicionar endere&#231;o de entrega</button>
+      <button class="btn-add" onclick="addEndereco()">+ Adicionar endereço de entrega</button>
     </div>
     <div class="card">
-      <p class="section-label">Data e hor&#225;rio</p>
+      <p class="section-label">Data e horário</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="field" style="margin-bottom:0"><label>Data</label><input type="date" id="data-rota"/></div>
-        <div class="field" style="margin-bottom:0"><label>Hor&#225;rio</label><input type="time" id="hora-rota"/></div>
+        <div class="field" style="margin-bottom:0"><label>Horário</label><input type="time" id="hora-rota"/></div>
       </div>
     </div>
     <div id="erro-geo" class="erro-box" style="display:none"></div>
-    <button class="btn-primary" id="btn-calcular" onclick="gerarRota()">Calcular melhor rota &#8594;</button>
-    <button class="btn-secondary" onclick="showScreen('screen-relatorio')">Ver relat&#243;rio mensal</button>
+    <button class="btn-primary" id="btn-calcular" onclick="gerarRota()">Calcular melhor rota →</button>
+    <button class="btn-secondary" onclick="showScreen('screen-relatorio')">Ver relatório mensal</button>
   </div>
 </div>
 
 <!-- TELA 2: ROTA -->
 <div class="screen" id="screen-rota">
-  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Rota organizada</p></div>
+  <div class="header"><h1>Aliria — Rotas</h1><p>Rota organizada</p></div>
   <div class="steps">
-    <div class="step done">1. Endere&#231;os</div>
+    <div class="step done">1. Endereços</div>
     <div class="step active">2. Rota</div>
     <div class="step">3. Link</div>
   </div>
   <div class="content">
     <div class="card">
-      <p class="section-label">Sequ&#234;ncia otimizada</p>
+      <p class="section-label">Sequência otimizada</p>
       <div id="rota-visual"></div>
     </div>
     <div class="card" style="border-left:4px solid var(--orange)">
       <p class="section-label">Valor da rota</p>
       <div class="metrics">
-        <div class="metric"><div class="metric-label">Paradas</div><div class="metric-value" id="r-paradas">&#8212;</div></div>
-        <div class="metric"><div class="metric-label">Dist&#226;ncia</div><div class="metric-value" id="r-km">&#8212;</div></div>
-        <div class="metric"><div class="metric-label">Tempo estimado</div><div class="metric-value" id="r-tempo">&#8212;</div></div>
-        <div class="metric"><div class="metric-label">Total</div><div class="metric-value accent" id="r-total">&#8212;</div></div>
+        <div class="metric"><div class="metric-label">Paradas</div><div class="metric-value" id="r-paradas">—</div></div>
+        <div class="metric"><div class="metric-label">Distância</div><div class="metric-value" id="r-km">—</div></div>
+        <div class="metric"><div class="metric-label">Tempo estimado</div><div class="metric-value" id="r-tempo">—</div></div>
+        <div class="metric"><div class="metric-label">Total</div><div class="metric-value accent" id="r-total">—</div></div>
       </div>
       <div class="breakdown">
-        <div class="brow"><span>Base (dist&#226;ncia)</span><span id="r-base">&#8212;</span></div>
-        <div class="brow" id="r-extra-row" style="display:none"><span>Acr&#233;scimo (3&#170;+ entrega)</span><span id="r-extra">&#8212;</span></div>
-        <div class="brow"><span>Total a pagar</span><span id="r-total2">&#8212;</span></div>
+        <div class="brow"><span>Base (distância)</span><span id="r-base">—</span></div>
+        <div class="brow" id="r-extra-row" style="display:none"><span>Acréscimo (3ª+ entrega)</span><span id="r-extra">—</span></div>
+        <div class="brow"><span>Total a pagar</span><span id="r-total2">—</span></div>
       </div>
     </div>
-    <button class="btn-primary" onclick="gerarLink()">Gerar link para motogirl &#8594;</button>
-    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">&#8592; Editar endere&#231;os</button>
+    <button class="btn-primary" onclick="gerarLink()">Gerar link para motogirl →</button>
+    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">← Editar endereços</button>
   </div>
 </div>
 
 <!-- TELA 3: LINK -->
 <div class="screen" id="screen-link">
-  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Link gerado com sucesso</p></div>
+  <div class="header"><h1>Aliria — Rotas</h1><p>Link gerado com sucesso</p></div>
   <div class="steps">
-    <div class="step done">1. Endere&#231;os</div>
+    <div class="step done">1. Endereços</div>
     <div class="step done">2. Rota</div>
     <div class="step active">3. Link</div>
   </div>
   <div class="content">
     <div class="card" style="text-align:center;padding:1.5rem">
-      <div style="font-size:40px;margin-bottom:10px">&#128279;</div>
+      <div style="font-size:40px;margin-bottom:10px">🔗</div>
       <h3 style="font-size:17px;font-weight:800;margin-bottom:6px">Link pronto!</h3>
       <p style="font-size:13px;font-weight:500;color:var(--muted)">Copie e envie pelo WhatsApp para a motogirl</p>
     </div>
     <div class="link-box">
-      <div class="link-url" id="link-display">&#8212;</div>
+      <div class="link-url" id="link-display">—</div>
       <button class="btn-copy" id="btn-copy" onclick="copiarLink()">Copiar link</button>
     </div>
-    <button class="btn-whats" onclick="enviarWhats()">&#128172; Enviar pelo WhatsApp</button>
+    <button class="btn-whats" onclick="enviarWhats()">💬 Enviar pelo WhatsApp</button>
     <div class="card" style="background:var(--orange-light);border-color:var(--orange-mid)">
       <p class="section-label">Resumo da rota</p>
       <div id="resumo-link"></div>
@@ -222,50 +221,50 @@ input:focus,select:focus{outline:none;border-color:var(--orange);}
   </div>
 </div>
 <div class="screen" id="screen-moto">
-  <div class="moto-header"><h1>Aliria</h1><p>Nova rota dispon&#237;vel para voc&#234;</p></div>
+  <div class="moto-header"><h1>Aliria</h1><p>Nova rota disponível para você</p></div>
   <div class="content" style="padding-top:1.25rem">
     <div class="valor-destaque">
       <div class="label">Valor da rota</div>
-      <div class="valor" id="moto-valor">&#8212;</div>
+      <div class="valor" id="moto-valor">—</div>
     </div>
-    <div class="card"><p class="section-label">Sequ&#234;ncia de entregas</p><div id="moto-rota-visual"></div></div>
-    <div class="card"><p class="section-label">Data e hor&#225;rio</p><div style="font-size:15px;font-weight:700;color:var(--text)" id="moto-data">&#8212;</div></div>
+    <div class="card"><p class="section-label">Sequência de entregas</p><div id="moto-rota-visual"></div></div>
+    <div class="card"><p class="section-label">Data e horário</p><div style="font-size:15px;font-weight:700;color:var(--text)" id="moto-data">—</div></div>
     <div id="moto-acoes">
       <div class="field" style="margin-bottom:12px">
         <label>Seu nome</label>
         <input type="text" id="moto-nome" placeholder="Digite seu nome completo"/>
       </div>
-      <button class="btn-green" onclick="motoAceitar()">&#10003; Aceito fazer esta rota</button>
-      <button class="btn-red" onclick="motoRecusar()">&#10007; N&#227;o consigo fazer esta rota</button>
+      <button class="btn-green" onclick="motoAceitar()">✓ Aceito fazer esta rota</button>
+      <button class="btn-red" onclick="motoRecusar()">✗ Não consigo fazer esta rota</button>
     </div>
     <div id="moto-resposta" style="display:none;text-align:center;padding:2rem 0">
       <div id="moto-badge"></div>
       <p style="margin-top:14px;font-size:14px;font-weight:600;color:var(--muted)" id="moto-msg"></p>
-      <button class="maps-btn" id="btn-maps" onclick="abrirMaps()" style="display:none">&#128205; Abrir rota no Google Maps</button>
+      <button class="maps-btn" id="btn-maps" onclick="abrirMaps()" style="display:none">📍 Abrir rota no Google Maps</button>
     </div>
   </div>
 </div>
 
-<!-- TELA 5: RELATORIO -->
+<!-- TELA 5: RELATÓRIO -->
 <div class="screen" id="screen-relatorio">
-  <div class="header"><h1>Aliria &#8212; Rotas</h1><p>Relat&#243;rio mensal de entregas</p></div>
+  <div class="header"><h1>Aliria — Rotas</h1><p>Relatório mensal de entregas</p></div>
   <div class="content" style="padding-top:1.25rem">
     <div class="card" style="padding:0.75rem 1.25rem">
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);flex-shrink:0">M&#234;s:</div>
+        <div style="font-size:13px;font-weight:700;color:var(--muted);flex-shrink:0">Mês:</div>
         <select id="mes-select" onchange="carregarRelatorio()" style="flex:1"></select>
         <button class="btn-primary" onclick="exportarPDF()" style="width:auto;padding:9px 16px;font-size:13px;margin-bottom:0;flex-shrink:0">Baixar PDF</button>
       </div>
     </div>
     <div id="rel-summary" style="display:none">
       <div class="summary-bar">
-        <div><div class="summary-bar-label">Total do m&#234;s</div><div class="summary-bar-value" id="rel-total">&#8212;</div></div>
-        <div style="text-align:center"><div class="summary-bar-label">Entregas</div><div class="summary-bar-value" id="rel-count">&#8212;</div></div>
-        <div style="text-align:right"><div class="summary-bar-label">Km total</div><div class="summary-bar-value" id="rel-km">&#8212;</div></div>
+        <div><div class="summary-bar-label">Total do mês</div><div class="summary-bar-value" id="rel-total">—</div></div>
+        <div style="text-align:center"><div class="summary-bar-label">Entregas</div><div class="summary-bar-value" id="rel-count">—</div></div>
+        <div style="text-align:right"><div class="summary-bar-label">Km total</div><div class="summary-bar-value" id="rel-km">—</div></div>
       </div>
     </div>
     <div id="rel-list"></div>
-    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">&#8592; Voltar</button>
+    <button class="btn-secondary" onclick="showScreen('screen-cadastro')">← Voltar</button>
   </div>
 </div>
 
@@ -273,7 +272,7 @@ input:focus,select:focus{outline:none;border-color:var(--orange);}
 var SB='https://fmivqhsfkvfunznrlxde.supabase.co';
 var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtaXZxaHNma3ZmdW56bnJseGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3Mzg4MDIsImV4cCI6MjA4OTMxNDgwMn0.ktJjaqdqXgcJbepqFXIkcsovQR_DoTVN30lZr7pG2o0';
 var OK='eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImUxOGFiNzFkNzAyYTRmMTA4YzhiNTQzMTY1ODM0M2RhIiwiaCI6Im11cm11cjY0In0=';
-var ORIGENS=[{nome:'Aliria SP \u2014 Itaim Bibi',end:'Rua Joaquim Floriano, 820, Itaim Bibi, S\u00e3o Paulo, SP'}];
+var ORIGENS=[{nome:'Aliria SP — Itaim Bibi',end:'Rua Joaquim Floriano, 820, Itaim Bibi, São Paulo, SP'}];
 var H={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
 var ends=[],rota=null,link='',relDados=[];
 
@@ -325,7 +324,7 @@ function calcP(km,numEntregas){
   return{base:Math.round(b*100)/100,extra:extra,total:Math.round((b+extra)*100)/100};
 }
 
-function addEndereco(){ends.push({id:Date.now(),nome:'',addr:'',pts:0,refrig:false});renderEnds();}
+function addEndereco(){ends.push({id:Date.now(),nome:'',addr:'',refrig:false});renderEnds();}
 function rmEnd(id){ends=ends.filter(function(e){return e.id!==id;});renderEnds();}
 function updEnd(id,f,v){var e=ends.find(function(e){return e.id===id;});if(e)e[f]=v;}
 
@@ -334,20 +333,19 @@ function renderEnds(){
     return '<div class="addr-item">'+
       '<div class="addr-header">'+
         '<div class="addr-label"><div class="addr-dot">'+String.fromCharCode(66+i)+'</div>Entrega '+(i+1)+'</div>'+
-        '<button class="btn-rm" onclick="rmEnd('+e.id+')">&#215;</button>'+
+        '<button class="btn-rm" onclick="rmEnd('+e.id+')">×</button>'+
       '</div>'+
       '<div class="field" style="margin-bottom:8px">'+
-        '<label style="font-size:12px">Nome do destinat\u00e1rio</label>'+
-        '<input type="text" placeholder="Ex: Maria Jos\u00e9 da Silva" value="'+(e.nome||'')+'" oninput="updEnd('+e.id+',\'nome\',this.value)"/>'+
+        '<label style="font-size:12px">Nome do destinatário</label>'+
+        '<input type="text" placeholder="Ex: Maria José da Silva" value="'+(e.nome||'')+'" oninput="updEnd('+e.id+',\'nome\',this.value)"/>'+
       '</div>'+
       '<div class="field" style="margin-bottom:8px">'+
-        '<label style="font-size:12px">Endere\u00e7o completo (com cidade e estado)</label>'+
-        '<input type="text" placeholder="Ex: Av. Paulista, 1000, Bela Vista, S\u00e3o Paulo, SP" value="'+e.addr+'" onchange="updEnd('+e.id+',\'addr\',this.value)"/>'+
+        '<label style="font-size:12px">Endereço completo (com cidade e estado)</label>'+
+        '<input type="text" placeholder="Ex: Av. Paulista, 1000, Bela Vista, São Paulo, SP" value="'+e.addr+'" onchange="updEnd('+e.id+',\'addr\',this.value)"/>'+
       '</div>'+
-
       '<div class="field" style="display:flex;align-items:center;gap:10px;background:#E3F2FD;border-radius:8px;padding:10px 12px;margin-top:4px">'+
-        '<input type="checkbox" id="refrig-'+e.id+'" '+(e.refrig?'checked':'')+'  onchange="updEnd('+e.id+',\'refrig\',this.checked)" style="width:18px;height:18px;margin:0;cursor:pointer"/>'+
-        '<label for="refrig-'+e.id+'" style="font-size:13px;font-weight:600;color:#e65100;margin:0;cursor:pointer">\u2744\ufe0f Medicamento refrigerado</label>'+
+        '<input type="checkbox" id="refrig-'+e.id+'" '+(e.refrig?'checked':'')+' onchange="updEnd('+e.id+',\'refrig\',this.checked)" style="width:18px;height:18px;margin:0;cursor:pointer"/>'+
+        '<label for="refrig-'+e.id+'" style="font-size:13px;font-weight:600;color:#e65100;margin:0;cursor:pointer">❄️ Medicamento refrigerado</label>'+
       '</div></div>';
   }).join('');
 }
@@ -361,75 +359,123 @@ function geo(addr){
     });
 }
 
-function calcDist(coords){
+// Calcula distância entre dois pontos via ORS (ponto a ponto)
+function calcDist2(coordA, coordB){
   return fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
-    method:'POST',headers:{'Authorization':OK,'Content-Type':'application/json'},
+    method:'POST',
+    headers:{'Authorization':OK,'Content-Type':'application/json'},
+    body:JSON.stringify({coordinates:[coordA, coordB],instructions:false})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.routes||!d.routes[0])return null;
+    return{
+      km: Math.round(d.routes[0].summary.distance/1000*10)/10,
+      min: Math.ceil(d.routes[0].summary.duration/60*0.7)
+    };
+  }).catch(function(){return null;});
+}
+
+// Calcula rota completa sequencial A→B→C→D
+function calcDistTotal(coords){
+  return fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+    method:'POST',
+    headers:{'Authorization':OK,'Content-Type':'application/json'},
     body:JSON.stringify({coordinates:coords,instructions:false})
   }).then(function(r){return r.json();}).then(function(d){
     if(!d.routes||!d.routes[0])return null;
-    var km=d.routes[0].summary.distance/1000;
-    var min=Math.ceil(d.routes[0].summary.duration/60*0.7);
-    return{km:km,min:min};
-  });
+    return{
+      km: Math.round(d.routes[0].summary.distance/1000*10)/10,
+      min: Math.ceil(d.routes[0].summary.duration/60*0.7)
+    };
+  }).catch(function(){return null;});
 }
 
 function gerarRota(){
   var origem=getOrigem();
-  if(!origem){alert('Selecione o ponto de sa\u00edda.');return;}
-  if(!ends.length){alert('Adicione pelo menos um endere\u00e7o.');return;}
-  if(ends.some(function(e){return !e.addr.trim();})){alert('Preencha todos os endere\u00e7os.');return;}
+  if(!origem){alert('Selecione o ponto de saída.');return;}
+  if(!ends.length){alert('Adicione pelo menos um endereço.');return;}
+  if(ends.some(function(e){return !e.addr.trim();})){alert('Preencha todos os endereços.');return;}
   var btn=document.getElementById('btn-calcular');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Calculando rota...';
   document.getElementById('erro-geo').style.display='none';
 
   var origemGeo;
   geo(origem).then(function(og){
-    if(!og)throw new Error('Ponto de sa\u00edda n\u00e3o encontrado.\nInclua rua, n\u00famero, bairro, cidade e estado.');
+    if(!og)throw new Error('Ponto de saída não encontrado.\nInclua rua, número, bairro, cidade e estado.');
     origemGeo=og;
-    var promises=ends.map(function(e,i){
+    return Promise.all(ends.map(function(e,i){
       return geo(e.addr).then(function(g){
-        if(!g)throw new Error('Endere\u00e7o '+(i+1)+' n\u00e3o encontrado:\n"'+e.addr+'"\nInclua cidade e estado.');
+        if(!g)throw new Error('Endereço '+(i+1)+' não encontrado:\n"'+e.addr+'"\nInclua cidade e estado.');
         return Object.assign({},e,{g:g});
       });
-    });
-    return Promise.all(promises);
-  }).then(function(ge){
-    return Promise.all(ge.map(function(e){
-      return calcDist([[origemGeo.lng,origemGeo.lat],[e.g.lng,e.g.lat]]).then(function(res){
-        var k=res&&res.km!=null?res.km:res;
-        return Object.assign({},e,{km:k!==null?Math.round(k*10)/10:0});
-      });
     }));
-  }).then(function(cd){
-    function haverDist(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-    var restantes=cd.slice(),ord=[],curLat=origemGeo.lat,curLng=origemGeo.lng;
-    while(restantes.length>0){var minD=Infinity,minI=0;for(var j=0;j<restantes.length;j++){var d=haverDist(curLat,curLng,restantes[j].g.lat,restantes[j].g.lng);if(d<minD){minD=d;minI=j;}}ord.push(restantes[minI]);curLat=restantes[minI].g.lat;curLng=restantes[minI].g.lng;restantes.splice(minI,1);}
-    var tkm;
-    if(ord.length===1){
-      tkm=ord[0].km;
-      var ac1=[[origemGeo.lng,origemGeo.lat],[ord[0].g.lng,ord[0].g.lat]];
-      return calcDist(ac1).then(function(res1){
-        var dm1=res1&&res1.min!=null?res1.min:null;
-        processar(ord,tkm,dm1);});
-    } else {
-      var ac=[[origemGeo.lng,origemGeo.lat]].concat(ord.map(function(e){return[e.g.lng,e.g.lat];}));
-      return calcDist(ac).then(function(res){
-        var dk=res&&res.km!=null?res.km:res;
-        var dm=res&&res.min!=null?res.min:null;
-        tkm=dk!==null?Math.round(dk*10)/10:ord.reduce(function(s,e){return s+e.km;},0);
-        processar(ord,tkm,dm);
-      });
+  }).then(function(geocoded){
+    // Ordenar por vizinho mais próximo (haversine para ordenação)
+    function haverDist(lat1,lng1,lat2,lng2){
+      var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+      var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+      return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
     }
+    var restantes=geocoded.slice(),ord=[],curLat=origemGeo.lat,curLng=origemGeo.lng;
+    while(restantes.length>0){
+      var minD=Infinity,minI=0;
+      for(var j=0;j<restantes.length;j++){
+        var d=haverDist(curLat,curLng,restantes[j].g.lat,restantes[j].g.lng);
+        if(d<minD){minD=d;minI=j;}
+      }
+      ord.push(restantes[minI]);
+      curLat=restantes[minI].g.lat;curLng=restantes[minI].g.lng;
+      restantes.splice(minI,1);
+    }
+
+    // Calcular distâncias SEQUENCIAIS em série (uma por vez) para garantir ordem certa
+    // pares: [origem→parada0, parada0→parada1, parada1→parada2, ...]
+    var pares=[[origemGeo, ord[0].g]];
+    for(var i=0;i<ord.length-1;i++){
+      pares.push([ord[i].g, ord[i+1].g]);
+    }
+
+    // Executa em série com async/await inline
+    return (async function(){
+      var kmsSegmentos=[];
+      for(var pi=0;pi<pares.length;pi++){
+        var par=pares[pi];
+        var res=await calcDist2([par[0].lng,par[0].lat],[par[1].lng,par[1].lat]);
+        kmsSegmentos.push(res);
+      }
+
+      // Atribuir km sequencial a cada parada (índice i = segmento do ponto anterior até esta parada)
+      var ordComKm=ord.map(function(e,i){
+        var seg=kmsSegmentos[i];
+        var kmVal=seg&&seg.km!=null?seg.km:0;
+        return Object.assign({},e,{km:kmVal,kmSeq:kmVal});
+      });
+
+      // Distância total = soma dos segmentos
+      var tkm=kmsSegmentos.reduce(function(s,seg){return s+(seg&&seg.km?seg.km:0);},0);
+      tkm=Math.round(tkm*10)/10;
+      var tmin=kmsSegmentos.reduce(function(s,seg){return s+(seg&&seg.min?seg.min:0);},0)||null;
+
+      processar(ordComKm,tkm,tmin);
+    })();
+
   }).catch(function(err){
     var el=document.getElementById('erro-geo');
-    el.style.display='block';el.textContent='\u26a0 '+(err.message||'Erro ao calcular rota.');
-    btn.disabled=false;btn.textContent='Calcular melhor rota \u2192';
+    el.style.display='block';el.textContent='⚠ '+(err.message||'Erro ao calcular rota.');
+    btn.disabled=false;btn.textContent='Calcular melhor rota →';
   });
 
   function processar(ord,tkm,tmin){
     var c=calcP(tkm,ord.length);
-    rota={origem:origem,data:document.getElementById('data-rota').value,hora:document.getElementById('hora-rota').value,
-      paradas:ord.map(function(e){return{nome:e.nome||'',addr:e.addr,km:e.km,refrig:e.refrig||false};}),totalKm:tkm,calc:c};
+    rota={
+      origem:origem,
+      data:document.getElementById('data-rota').value,
+      hora:document.getElementById('hora-rota').value,
+      paradas:ord.map(function(e){
+        return{nome:e.nome||'',addr:e.addr,km:e.kmSeq||e.km||0,refrig:e.refrig||false};
+      }),
+      totalKm:tkm,
+      calc:c
+    };
     renderRota('rota-visual',rota);
     document.getElementById('r-paradas').textContent=ord.length;
     document.getElementById('r-km').textContent=tkm.toFixed(1)+' km';
@@ -442,9 +488,10 @@ function gerarRota(){
     document.getElementById('r-total').textContent=fmt(c.total);
     document.getElementById('r-base').textContent=fmt(c.base);
     if(c.extra>0){document.getElementById('r-extra-row').style.display='';document.getElementById('r-extra').textContent=fmt(c.extra);}
+    else{document.getElementById('r-extra-row').style.display='none';}
     document.getElementById('r-total2').textContent=fmt(c.total);
     showScreen('screen-rota');
-    btn.disabled=false;btn.textContent='Calcular melhor rota \u2192';
+    btn.disabled=false;btn.textContent='Calcular melhor rota →';
   }
 }
 
@@ -453,14 +500,21 @@ function renderRota(id,r){
     return{l:String.fromCharCode(66+i),nome:p.nome||'',addr:p.addr,km:p.km,refrig:p.refrig||false};
   }));
   document.getElementById(id).innerHTML=stops.map(function(s,i){
-    var kmTag=s.orig?'Ponto de sa\u00edda':'<span class="tag-km">'+(parseFloat(s.km)||0).toFixed(1)+' km</span>'+(s.pts>0?'<span class="tag-pts">'+s.pts+' ponto(s) C+</span>':'');
+    var kmTag;
+    if(s.orig){
+      kmTag='Ponto de saída';
+    } else {
+      var kmVal=parseFloat(s.km)||0;
+      var label=i===1?'da origem':'da parada anterior';
+      kmTag='<span class="tag-km">'+kmVal.toFixed(1)+' km '+label+'</span>';
+    }
     return '<div class="route-stop">'+
       '<div class="route-line-wrap">'+
         '<div class="route-dot-big '+(s.orig?'origin':'')+'">'+ s.l+'</div>'+
         (i<stops.length-1?'<div class="route-line"></div>':'')+
       '</div>'+
       '<div class="route-info">'+
-      (s.nome?'<p style="font-size:11px;font-weight:700;color:var(--orange);margin:0 0 2px">\uD83D\uDC64 '+s.nome+(s.refrig?' \u2744\ufe0f':'')+'</p>':"")+
+      (s.nome?'<p style="font-size:11px;font-weight:700;color:var(--orange);margin:0 0 2px">👤 '+s.nome+(s.refrig?' ❄️':'')+'</p>':'')+
       '<h4>'+s.addr+'</h4><p>'+kmTag+'</p></div>'+
     '</div>';
   }).join('');
@@ -468,8 +522,6 @@ function renderRota(id,r){
 
 async function gerarLink(){
   if(!rota)return;
-  var btn=document.getElementById('btn-gerar');
-  if(btn){btn.disabled=true;btn.textContent='Gerando link...';}
   try{
     var res=await fetch(SB+'/rest/v1/rotas_motoboy',{
       method:'POST',
@@ -486,13 +538,12 @@ async function gerarLink(){
   } catch(e){
     link=window.location.href.split('#')[0]+'#rota='+btoa(unescape(encodeURIComponent(JSON.stringify(rota))));
   }
-  if(btn){btn.disabled=false;btn.textContent='Gerar link para motogirl →';}
   document.getElementById('link-display').textContent=link;
-  var df=rota.data?new Date(rota.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+  var df=rota.data?new Date(rota.data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
   document.getElementById('resumo-link').innerHTML=
     '<div style="display:flex;flex-direction:column;gap:6px">'+
     '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Paradas</span><span>'+rota.paradas.length+'</span></div>'+
-    '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Dist\u00e2ncia</span><span>'+rota.totalKm.toFixed(1)+' km</span></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Distância total</span><span>'+rota.totalKm.toFixed(1)+' km</span></div>'+
     '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--muted)">Data</span><span>'+df+' '+(rota.hora||'')+'</span></div>'+
     '<div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding-top:8px;border-top:1px solid var(--border)"><span>Total a pagar</span><span style="color:var(--orange)">'+fmt(rota.calc.total)+'</span></div></div>';
   showScreen('screen-link');
@@ -501,7 +552,7 @@ async function gerarLink(){
 function copiarLink(){
   navigator.clipboard.writeText(link).then(function(){
     var b=document.getElementById('btn-copy');
-    b.textContent='\u2713 Link copiado!';b.classList.add('copied');
+    b.textContent='✓ Link copiado!';b.classList.add('copied');
     setTimeout(function(){b.textContent='Copiar link';b.classList.remove('copied');},2500);
   });
 }
@@ -509,23 +560,22 @@ function copiarLink(){
 function enviarWhats(){
   if(!rota)return;
   var df=rota.data?new Date(rota.data+'T12:00:00').toLocaleDateString('pt-BR'):'';
-  var msg='*Aliria \u2014 Nova rota!*\n\n*Data:* '+df+(rota.hora?' \u00e0s '+rota.hora:'')+'\n*Paradas:* '+rota.paradas.length+'\n*Dist\u00e2ncia:* '+rota.totalKm.toFixed(1)+' km\n*Valor:* '+fmt(rota.calc.total)+'\n\n'+link;
+  var msg='*Aliria — Nova rota!*\n\n*Data:* '+df+(rota.hora?' às '+rota.hora:'')+'\n*Paradas:* '+rota.paradas.length+'\n*Distância:* '+rota.totalKm.toFixed(1)+' km\n*Valor:* '+fmt(rota.calc.total)+'\n\n'+link;
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 function mostrarMoto(r,linkId){
   rota=r;
   window._motoLinkId=linkId||null;
-  var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+  var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
   document.getElementById('moto-valor').textContent=fmt(r.calc.total);
-  document.getElementById('moto-data').textContent=df+(r.hora?' \u00e0s '+r.hora:'');
+  document.getElementById('moto-data').textContent=df+(r.hora?' às '+r.hora:'');
   renderRota('moto-rota-visual',r);
-  // Se já foi aceita, bloquear os botões
   if(r.aceita){
     showScreen('screen-moto');
     document.getElementById('moto-acoes').style.display='none';
     document.getElementById('moto-resposta').style.display='block';
-    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">\u2713 Rota já aceita!</span>';
+    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">✓ Rota já aceita!</span>';
     document.getElementById('moto-msg').textContent='Esta rota já foi confirmada anteriormente.';
     document.getElementById('btn-maps').style.display='flex';
   } else {
@@ -542,15 +592,14 @@ function motoAceitar(){
     method:'POST',
     headers:Object.assign({},H,{'Prefer':'return=minimal'}),
     body:JSON.stringify({motoboy:nome,origem:rota.origem,data:rota.data,hora:rota.hora,
-      paradas:rota.paradas,total_km:rota.totalKm,total_pts:rota.totalPts,valor:rota.calc.total,calc:rota.calc})
+      paradas:rota.paradas,total_km:rota.totalKm,valor:rota.calc.total,calc:rota.calc})
   }).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error(t);});
     document.getElementById('moto-acoes').style.display='none';
     document.getElementById('moto-resposta').style.display='block';
-    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">\u2713 Rota aceita!</span>';
+    document.getElementById('moto-badge').innerHTML='<span class="badge-aceita">✓ Rota aceita!</span>';
     document.getElementById('moto-msg').textContent=nome+' confirmou esta entrega!';
     document.getElementById('btn-maps').style.display='flex';
-    // Marcar link como aceito no Supabase para bloquear novo aceite
     if(window._motoLinkId){
       fetch(SB+'/rest/v1/rotas_motoboy?id=eq.'+window._motoLinkId,{
         method:'PATCH',
@@ -559,7 +608,7 @@ function motoAceitar(){
       }).catch(function(){});
     }
   }).catch(function(err){
-    btn.disabled=false;btn.textContent='\u2713 Aceito fazer esta rota';
+    btn.disabled=false;btn.textContent='✓ Aceito fazer esta rota';
     alert('Erro ao salvar.\n'+err.message);
   });
 }
@@ -567,8 +616,8 @@ function motoAceitar(){
 function motoRecusar(){
   document.getElementById('moto-acoes').style.display='none';
   document.getElementById('moto-resposta').style.display='block';
-  document.getElementById('moto-badge').innerHTML='<span class="badge-recusou">\u2715 Rota recusada</span>';
-  document.getElementById('moto-msg').textContent='Voc\u00ea recusou esta rota.';
+  document.getElementById('moto-badge').innerHTML='<span class="badge-recusou">✗ Rota recusada</span>';
+  document.getElementById('moto-msg').textContent='Você recusou esta rota.';
 }
 
 function abrirMaps(){
@@ -599,7 +648,7 @@ function carregarRelatorio(){
     .then(function(r){return r.json();})
     .then(function(data){
       relDados=data;
-      if(!data.length){el.innerHTML='<div class="empty-state"><p>Nenhuma entrega neste m\u00eas.</p></div>';return;}
+      if(!data.length){el.innerHTML='<div class="empty-state"><p>Nenhuma entrega neste mês.</p></div>';return;}
       var tv=data.reduce(function(s,r){return s+Number(r.valor||0);},0);
       var tk=data.reduce(function(s,r){return s+Number(r.total_km||0);},0);
       su.style.display='block';
@@ -607,20 +656,20 @@ function carregarRelatorio(){
       document.getElementById('rel-count').textContent=data.length;
       document.getElementById('rel-km').textContent=tk.toFixed(1)+' km';
       el.innerHTML=data.map(function(r){
-        var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+        var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
         var ps=Array.isArray(r.paradas)?r.paradas:[];
         return '<div class="hist-item" id="rel-item-'+r.id+'" data-valor="'+Number(r.valor||0)+'" data-km="'+Number(r.total_km||0)+'">'+
           '<div class="hist-top">'+
-            '<div><div class="hist-name">'+(r.motoboy||'\u2014')+'</div><div class="hist-date">'+df+' '+(r.hora||'')+'</div></div>'+
+            '<div><div class="hist-name">'+(r.motoboy||'—')+'</div><div class="hist-date">'+df+' '+(r.hora||'')+'</div></div>'+
             '<div style="text-align:right;display:flex;align-items:center;gap:10px">'+
               '<div><div class="hist-price">'+fmt(r.valor||0)+'</div><span class="hist-badge">aceita</span></div>'+
-              '<button onclick="excluirDoRelatorio(\''+r.id+'\')" title="Excluir do relatório" style="background:none;border:1px solid #e53935;color:#e53935;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:16px;line-height:1">\uD83D\uDDD1</button>'+
+              '<button onclick="excluirDoRelatorio(\''+r.id+'\')" title="Excluir do relatório" style="background:none;border:1px solid #e53935;color:#e53935;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:16px;line-height:1">🗑</button>'+
             '</div>'+
           '</div>'+
           '<div class="hist-meta"><span>'+ps.length+' parada(s)</span><span>'+Number(r.total_km||0).toFixed(1)+' km</span></div>'+
         '</div>';
       }).join('');
-    }).catch(function(){el.innerHTML='<div class="erro-box">\u26a0 Erro ao carregar dados.</div>';});
+    }).catch(function(){el.innerHTML='<div class="erro-box">⚠ Erro ao carregar dados.</div>';});
 }
 
 async function excluirDoRelatorio(id){
@@ -651,11 +700,11 @@ function exportarPDF(){
   var doc=new jsPDF({unit:'mm',format:'a4'});var W=210,M=18,yy=0;
   doc.setFillColor(255,107,0);doc.rect(0,0,W,42,'F');
   doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(255,255,255);
-  doc.text('Aliria \u2014 Relat\u00f3rio Mensal',M,18);
+  doc.text('Aliria — Relatório Mensal',M,18);
   doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text(nmf,M,27);
   doc.setFontSize(9);doc.text('Gerado em: '+new Date().toLocaleString('pt-BR'),M,34);yy=52;
   doc.setFillColor(255,243,235);doc.roundedRect(M,yy,W-M*2,28,3,3,'F');
-  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,107,0);doc.text('RESUMO DO M\u00caS',M+6,yy+8);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,107,0);doc.text('RESUMO DO MÊS',M+6,yy+8);
   doc.setFontSize(11);doc.setTextColor(45,45,45);
   doc.text('Total: '+relDados.length+' entregas',M+6,yy+16);
   doc.text('Km: '+tk.toFixed(1),M+80,yy+16);
@@ -665,7 +714,7 @@ function exportarPDF(){
   doc.text('DETALHAMENTO DAS ENTREGAS',M,yy+6);yy+=12;
   relDados.forEach(function(r,i){
     if(yy>265){doc.addPage();yy=20;}
-    var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'\u2014';
+    var df=r.data?new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
     var ps=Array.isArray(r.paradas)?r.paradas:[];
     var bg=i%2?245:250;
     doc.setFillColor(bg,bg,bg);doc.rect(M,yy,W-M*2,22,'F');
@@ -674,17 +723,17 @@ function exportarPDF(){
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
     doc.text(String(i+1),M+(String(i+1).length===1?6.2:4.5),yy+13.5);
     doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(45,45,45);
-    doc.text(r.motoboy||'\u2014',M+17,yy+8);
+    doc.text(r.motoboy||'—',M+17,yy+8);
     doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(136,136,136);
-    doc.text(df+' '+(r.hora||'')+'  \u2022  '+ps.length+' parada(s)  \u2022  '+Number(r.total_km||0).toFixed(1)+' km',M+17,yy+14);
+    doc.text(df+' '+(r.hora||'')+'  •  '+ps.length+' parada(s)  •  '+Number(r.total_km||0).toFixed(1)+' km',M+17,yy+14);
     doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(255,107,0);
     doc.text(fmt(r.valor||0),W-M-4,yy+13,{align:'right'});yy+=24;
   });
   yy+=4;doc.setFillColor(255,107,0);doc.roundedRect(M,yy,W-M*2,16,3,3,'F');
   doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(255,255,255);
-  doc.text('TOTAL DO M\u00caS:',M+6,yy+10);doc.text(fmt(tv),W-M-6,yy+10,{align:'right'});
+  doc.text('TOTAL DO MÊS:',M+6,yy+10);doc.text(fmt(tv),W-M-6,yy+10,{align:'right'});
   doc.setFontSize(8);doc.setTextColor(200,200,200);
-  doc.text('Aliria \u2014 Sistema de Rotas',W/2,290,{align:'center'});
+  doc.text('Aliria — Sistema de Rotas',W/2,290,{align:'center'});
   doc.save('Aliria_Relatorio_'+mes+'.pdf');
 }
 
