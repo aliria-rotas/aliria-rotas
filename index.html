@@ -350,18 +350,20 @@ function renderEnds(){
   }).join('');
 }
 
-function limparEndereco(addr){
-  // Remove CEP (formato 00000-000 ou 00000000) do endereço antes de enviar para a API
-  return addr.replace(/\s*,?\s*\d{5}-?\d{3}/g,'').replace(/\s*,\s*,/g,',').trim();
-}
-
 function geo(addr){
-  var addrLimpo = limparEndereco(addr);
-  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addrLimpo)+'&boundary.country=BR&size=1')
+  // Tenta primeiro com o endereço completo, depois sem CEP se falhar
+  var addrSemCep = addr.replace(/,?\s*\d{5}-\d{3}/g,'').replace(/,?\s*\d{8}/g,'').trim();
+  return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addr)+'&boundary.country=BR&size=1')
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.features&&d.features[0]){var c=d.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
-      return null;
+      // Se falhou com CEP, tenta sem
+      return fetch('https://api.openrouteservice.org/geocode/search?api_key='+OK+'&text='+encodeURIComponent(addrSemCep)+'&boundary.country=BR&size=1')
+        .then(function(r2){return r2.json();})
+        .then(function(d2){
+          if(d2.features&&d2.features[0]){var c=d2.features[0].geometry.coordinates;return{lat:c[1],lng:c[0]};}
+          return null;
+        });
     });
 }
 
